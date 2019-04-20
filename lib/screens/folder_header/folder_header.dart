@@ -87,6 +87,17 @@ class FolderHeader extends StatelessWidget {
                                 : FontAwesomeIcons.angleDown,
                             size: 20,
                           ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(),
+                          ),
+                          isDetailView
+                              ? CupertinoButton(
+//                            child: Icon(Icons.add),
+                                  child: Text("ADD"),
+                                  onPressed: () {},
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
