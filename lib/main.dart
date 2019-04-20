@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foldering/screens/folder_header/folder_header.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,11 +9,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
-      home: Material(
-        child: FolderingHome(),
+    return Material(
+      child: CupertinoApp(
+        home: FolderingHome(),
+        title: "Foldering",
       ),
-      title: "Foldering",
     );
   }
 }
@@ -20,14 +21,20 @@ class MyApp extends StatelessWidget {
 class FolderingHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        border: null,
+        backgroundColor: Colors.white,
         leading: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Text(
               "Foldering",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -62,64 +69,16 @@ class FolderingHome extends StatelessWidget {
           ],
         ),
       ),
-      child: Material(
+      child: SafeArea(
         child: ListView.builder(
           itemBuilder: (_context, _idx) {
-            return ExpansionTile(
-              title: Text("Test"),
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Text("All"),
-                    Text("Photo"),
-                    Text("URL"),
-                    Text("Text"),
-                  ],
-                ),
-                Container(
-                  height: 500.0,
-                  child: GridView(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 16.0,
-                      childAspectRatio: 1.0,
-                    ),
-                    padding: EdgeInsets.all(16.0),
-                    children: <Widget>[
-                      Container(
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text("사진"),
-                        ),
-                      ),
-                      Container(
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text("사진"),
-                        ),
-                      ),
-                      Container(
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text("사진"),
-                        ),
-                      ),
-                      Container(
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text("사진"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            return FolderHeader(
+              isOdd: _idx % 2 == 0,
+              title: "UX 디자인 노트",
             );
           },
           itemCount: 10,
+          padding: EdgeInsets.only(top: 5.0),
         ),
       ),
     );

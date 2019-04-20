@@ -1,46 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:foldering/screens/folder_header/folder_header.dart';
 
 class DetailedScreen extends StatelessWidget {
+  final String title;
+
+  DetailedScreen({@required this.title});
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+    return CupertinoPageScaffold(
+      child: SafeArea(
+        child: Column(
           children: <Widget>[
-            Text("All"),
-            Text("Photo"),
-            Text("URL"),
-            Text("Text"),
-          ],
-        ),
-        GridView.extent(
-          maxCrossAxisExtent: 2,
-          children: <Widget>[
-            Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.grey,
+            FolderHeader(
+              title: "UX 디자인 노트",
+              isOdd: true,
+              isDetailView: true,
             ),
-            Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.grey,
-            ),
-            Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.grey,
-            ),
-            Container(
-              width: 200.0,
-              height: 200.0,
-              color: Colors.grey,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("All"),
+                Text("Photo"),
+                Text("URL"),
+                Text("Text"),
+              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
