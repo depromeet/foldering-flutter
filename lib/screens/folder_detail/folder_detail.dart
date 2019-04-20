@@ -17,28 +17,7 @@ class DetailedScreen extends StatelessWidget {
       child: SafeArea(
         child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                FolderHeader(
-                  title: this.title,
-                  isOdd: true,
-                  isDetailView: true,
-                ),
-                SizedBox(height: 24.0),
-                Hero(
-                  tag: this.title + "body",
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      DataCategory(),
-                      SizedBox(height: 32.0),
-                      FolderContents(category: ContentCategory.all),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            buildMainContent(),
             AddButton(
               icon: Icon(
                 Icons.add,
@@ -49,6 +28,31 @@ class DetailedScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Column buildMainContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        FolderHeader(
+          title: this.title,
+          isOdd: true,
+          isDetailView: true,
+        ),
+        SizedBox(height: 24.0),
+        Hero(
+          tag: this.title + "body",
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              DataCategory(),
+              SizedBox(height: 32.0),
+              FolderContents(category: ContentCategory.all),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

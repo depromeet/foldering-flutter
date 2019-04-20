@@ -48,32 +48,7 @@ class _FolderingHomeState extends State<FolderingHome> {
       child: SafeArea(
         child: Stack(
           children: [
-            ListView.builder(
-              itemBuilder: (_context, _idx) {
-                final title = "UX 디자인 노트 $_idx";
-                return Column(
-                  children: <Widget>[
-                    FolderHeader(
-                      isOdd: _idx % 2 == 0,
-                      title: title,
-                    ),
-                    Hero(
-                      tag: title + "body",
-                      child: BlocBuilder(
-                        bloc: _navBloc,
-                        builder: (context, control) {
-                          return control == NavigationEvent.toMainStart
-                              ? DataCategory()
-                              : Container();
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
-              itemCount: 10,
-              padding: EdgeInsets.only(top: 5.0),
-            ),
+            buildMainContent(),
             AddButton(
               icon: Icon(
                 Icons.folder,
@@ -84,6 +59,35 @@ class _FolderingHomeState extends State<FolderingHome> {
           ],
         ),
       ),
+    );
+  }
+
+  ListView buildMainContent() {
+    return ListView.builder(
+      itemBuilder: (_context, _idx) {
+        final title = "UX 디자인 노트 $_idx";
+        return Column(
+          children: <Widget>[
+            FolderHeader(
+              isOdd: _idx % 2 == 0,
+              title: title,
+            ),
+            Hero(
+              tag: title + "body",
+              child: BlocBuilder(
+                bloc: _navBloc,
+                builder: (context, control) {
+                  return control == NavigationEvent.toMainStart
+                      ? DataCategory()
+                      : Container();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+      itemCount: 10,
+      padding: EdgeInsets.only(top: 5.0),
     );
   }
 }
