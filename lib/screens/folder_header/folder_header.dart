@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:foldering/screens/folder_detail/folder_detail.dart';
+
+import 'package:foldering/blocs/navigation_bloc.dart';
 
 const handleHeight = 25.0;
 const handleWidth = 56.0;
@@ -25,75 +28,78 @@ class FolderHeader extends StatelessWidget {
     this.isDetailView = false,
   });
 
+  _handleNavigation(BuildContext context, NavigationBloc _navBloc) async {
+    if (isDetailView) {
+//      _navBloc.dispatch(NavigationEvent.toMainStart);
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).push(
+        FolderingRoute(this.title, bloc: _navBloc),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      onTap: () {
-        if (isDetailView) {
-          Navigator.of(context).pop();
-        } else {
-          Navigator.of(context).push(
-            CupertinoPageRoute(
-              builder: (_context) {
-                return DetailedScreen(
-                  title: this.title,
-                );
-              },
-            ),
-          );
-        }
-      },
-      child: SizedBox(
-        width: screenWidth,
-        height: headerHeight + handleHeight,
-        child: ShadowContainer(
-          isOdd: this.isOdd,
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Expanded(
-                  flex: (handleHeight / (headerHeight + handleHeight) * 10000)
-                      .round(),
-                  child: Container(child: Row()),
-                ),
-                Expanded(
-                  flex: (headerHeight / (headerHeight + handleHeight) * 10000)
-                      .round(),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 16.0, top: 10.0),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          this.title,
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
+    final NavigationBloc _navBloc = BlocProvider.of<NavigationBloc>(context);
+    return Hero(
+      tag: this.title,
+      child: GestureDetector(
+        onTap: () {
+          _handleNavigation(context, _navBloc);
+        },
+        child: SizedBox(
+          width: screenWidth,
+          height: headerHeight + handleHeight,
+          child: ShadowContainer(
+            isOdd: this.isOdd,
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    flex: (handleHeight / (headerHeight + handleHeight) * 10000)
+                        .round(),
+                    child: Container(child: Row()),
+                  ),
+                  Expanded(
+                    flex: (headerHeight / (headerHeight + handleHeight) * 10000)
+                        .round(),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, top: 10.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            this.title,
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        Icon(
-                          isDetailView
-                              ? FontAwesomeIcons.angleUp
-                              : FontAwesomeIcons.angleDown,
-                          size: 20,
-                        ),
-                      ],
+                          SizedBox(
+                            width: 8.0,
+                          ),
+                          Icon(
+                            isDetailView
+                                ? FontAwesomeIcons.angleUp
+                                : FontAwesomeIcons.angleDown,
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          clipper: HeaderClipper(isOdd: this.isOdd),
-          shadow: Shadow(
-            offset: Offset(0.0, -1.0),
-            blurRadius: 6,
-            color: Color.fromRGBO(0, 0, 0, 0.3),
+            clipper: HeaderClipper(isOdd: this.isOdd),
+            shadow: Shadow(
+              offset: Offset(0.0, -1.0),
+              blurRadius: 6,
+              color: Color.fromRGBO(0, 0, 0, 0.3),
+            ),
           ),
         ),
       ),
@@ -172,5 +178,23 @@ class _ClipShadowShadowPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
+  }
+}
+
+class FolderingRoute extends CupertinoPageRoute {
+  final NavigationBloc bloc;
+  FolderingRoute(String title, {this.bloc})
+      : super(builder: (BuildContext context) => DetailedScreen(title: title));
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return child;
+  }
+
+  @override
+  void dispose() {
+    bloc.dispatch(NavigationEvent.toMainDone);
+    super.dispose();
   }
 }
