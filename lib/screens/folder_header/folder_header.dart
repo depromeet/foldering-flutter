@@ -4,37 +4,39 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:foldering/screens/folder_detail/folder_detail.dart';
+import 'package:foldering/models/folder_info.dart';
 
 import 'package:foldering/blocs/navigation_bloc.dart';
 
-const handleHeight = 25.0;
-const handleWidth = 56.0;
-const handlePadding = 10.0;
-const oddHandleOffset = 275.0;
-const evenHandleOffset =
-    oddHandleOffset - ((handleWidth + handlePadding * 2) / 2);
-const headerHeight = 57.0;
+const handleHeight = 22.0;
+const handleWidth = 80.0;
+const handlePadding = 11.0;
+const oddHandleOffset = 20.0;
+const evenHandleOffset = oddHandleOffset + (handleWidth / 2);
+const totalHeight = 90.0;
+const headerHeight = totalHeight - handleHeight;
+const headerTitleTopPadding = 10.0;
+const headerTitleLeftPadding = 16.0;
 
 class FolderHeader extends StatelessWidget {
-  final bool isOdd;
-  final bool isShared;
-  final String title;
-  final bool isDetailView;
+  final FolderInfo folderInfo;
 
-  FolderHeader({
-    @required this.isOdd,
-    this.isShared = false,
-    @required this.title,
-    this.isDetailView = false,
-  });
+  FolderHeader({@required this.folderInfo});
 
   _handleNavigation(BuildContext context, NavigationBloc _navBloc) async {
-    if (isDetailView) {
-//      _navBloc.dispatch(NavigationEvent.toMainStart);
+    if (this.folderInfo.isDetailView) {
+      _navBloc.dispatch(NavigationEvent(
+        targetFolderIndex: this.folderInfo.folderIndex,
+        action: NavigationAction.toMainStart,
+      ));
       Navigator.of(context).pop();
     } else {
+      _navBloc.dispatch(NavigationEvent(
+        targetFolderIndex: this.folderInfo.folderIndex,
+        action: NavigationAction.toDetail,
+      ));
       Navigator.of(context).push(
-        FolderingRoute(this.title, bloc: _navBloc),
+        FolderingRoute(bloc: _navBloc, folderInfo: this.folderInfo),
       );
     }
   }
@@ -43,36 +45,37 @@ class FolderHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final NavigationBloc _navBloc = BlocProvider.of<NavigationBloc>(context);
-    return Hero(
-      tag: this.title,
-      child: GestureDetector(
-        onTap: () {
-          _handleNavigation(context, _navBloc);
-        },
+    return GestureDetector(
+      onTap: () {
+        _handleNavigation(context, _navBloc);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
         child: SizedBox(
           width: screenWidth,
-          height: headerHeight + handleHeight,
+          height: totalHeight,
           child: ShadowContainer(
-            isOdd: this.isOdd,
+            isOdd: this.folderInfo.isOdd,
             child: Container(
               color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Expanded(
-                    flex: (handleHeight / (headerHeight + handleHeight) * 10000)
-                        .round(),
+                    flex: (handleHeight / (totalHeight) * 10000).round(),
                     child: Container(child: Row()),
                   ),
                   Expanded(
-                    flex: (headerHeight / (headerHeight + handleHeight) * 10000)
-                        .round(),
+                    flex: (headerHeight / (totalHeight) * 10000).round(),
                     child: Padding(
-                      padding: EdgeInsets.only(left: 16.0, top: 10.0),
+                      padding: EdgeInsets.only(
+                        left: headerTitleLeftPadding,
+                        top: headerTitleTopPadding,
+                      ),
                       child: Row(
                         children: <Widget>[
                           Text(
-                            this.title,
+                            this.folderInfo.title,
                             style: TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.bold,
@@ -82,7 +85,7 @@ class FolderHeader extends StatelessWidget {
                             width: 8.0,
                           ),
                           Icon(
-                            isDetailView
+                            this.folderInfo.isDetailView
                                 ? FontAwesomeIcons.angleUp
                                 : FontAwesomeIcons.angleDown,
                             size: 20,
@@ -91,7 +94,7 @@ class FolderHeader extends StatelessWidget {
                             flex: 10,
                             child: Container(),
                           ),
-                          isDetailView
+                          this.folderInfo.isDetailView
                               ? CupertinoButton(
 //                            child: Icon(Icons.add),
                                   child: Text("ADD"),
@@ -105,7 +108,10 @@ class FolderHeader extends StatelessWidget {
                 ],
               ),
             ),
-            clipper: HeaderClipper(isOdd: this.isOdd),
+            clipper: HeaderClipper(
+              isOdd: this.folderInfo.isOdd,
+              mediaWidth: screenWidth,
+            ),
             shadow: Shadow(
               offset: Offset(0.0, -1.0),
               blurRadius: 6,
@@ -121,22 +127,30 @@ class FolderHeader extends StatelessWidget {
 class HeaderClipper extends CustomClipper<Path> {
   final bottomPading;
   final isOdd;
-  HeaderClipper({this.bottomPading = 0, @required this.isOdd});
+  final mediaWidth;
+  HeaderClipper({
+    this.bottomPading = 0,
+    @required this.isOdd,
+    @required this.mediaWidth,
+  });
   @override
   Path getClip(Size size) {
-    final handleOffset = isOdd ? oddHandleOffset : evenHandleOffset;
+    final xHandleBottomRight =
+        this.mediaWidth - (isOdd ? oddHandleOffset : evenHandleOffset);
+    final xHandleTopRight = xHandleBottomRight - handlePadding;
+
+    final xHandleTopLeft = xHandleTopRight - (handleWidth - 2 * handlePadding);
+    final xHandleBottomLeft = xHandleTopLeft - handlePadding;
+
     final path = Path();
     path.moveTo(0.0, handleHeight);
-    path.lineTo(handleOffset, handleHeight);
-    path.lineTo(handleOffset + handlePadding, 0.0);
-    path.lineTo(handleOffset + handlePadding + handleWidth, 0.0);
-    path.lineTo(
-      handleOffset + handlePadding * 2 + handleWidth,
-      handleHeight,
-    );
+    path.lineTo(xHandleBottomLeft, handleHeight);
+    path.lineTo(xHandleTopLeft, 0.0);
+    path.lineTo(xHandleTopRight, 0.0);
+    path.lineTo(xHandleBottomRight, handleHeight);
     path.lineTo(size.width, handleHeight);
-    path.lineTo(size.width, handleHeight + headerHeight - bottomPading);
-    path.lineTo(0.0, handleHeight + headerHeight - bottomPading);
+    path.lineTo(size.width, totalHeight - this.bottomPading);
+    path.lineTo(0.0, totalHeight - this.bottomPading);
     path.close();
     return path;
   }
@@ -157,11 +171,13 @@ class ShadowContainer extends StatelessWidget {
       @required this.isOdd});
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return CustomPaint(
       painter: _ClipShadowShadowPainter(
         clipper: HeaderClipper(
           bottomPading: 10,
           isOdd: this.isOdd,
+          mediaWidth: width,
         ),
         shadow: this.shadow,
       ),
@@ -194,8 +210,15 @@ class _ClipShadowShadowPainter extends CustomPainter {
 
 class FolderingRoute extends CupertinoPageRoute {
   final NavigationBloc bloc;
-  FolderingRoute(String title, {this.bloc})
-      : super(builder: (BuildContext context) => DetailedScreen(title: title));
+  final FolderInfo folderInfo;
+
+  FolderingRoute({
+    @required this.folderInfo,
+    @required this.bloc,
+  }) : super(
+          builder: (BuildContext context) =>
+              DetailedScreen(folderInfo: folderInfo),
+        );
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
@@ -205,7 +228,10 @@ class FolderingRoute extends CupertinoPageRoute {
 
   @override
   void dispose() {
-    bloc.dispatch(NavigationEvent.toMainDone);
+    bloc.dispatch(NavigationEvent(
+      action: NavigationAction.toMainDone,
+      targetFolderIndex: this.folderInfo.folderIndex,
+    ));
     super.dispose();
   }
 }

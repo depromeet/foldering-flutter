@@ -1,17 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:foldering/screens/common/foldering_app_bar.dart';
 import 'package:foldering/screens/folder_header/folder_header.dart';
 import 'package:foldering/screens/folder_detail/folder_detail.dart';
+import 'package:foldering/screens/common/foldering_folder.dart';
 import 'package:foldering/screens/common/add_button.dart';
+import 'package:foldering/screens/common/zero_padding_icon.dart';
+import 'package:foldering/models/folder_info.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foldering/blocs/navigation_bloc.dart';
 import 'package:foldering/blocs/appbar_bloc.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  timeDilation = 2.0;
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -24,6 +32,16 @@ class MyApp extends StatelessWidget {
       ],
       child: Material(
         child: CupertinoApp(
+          supportedLocales: [
+            const Locale('en'),
+            const Locale('ko'),
+          ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            DefaultMaterialLocalizations.delegate,
+            DefaultCupertinoLocalizations.delegate,
+          ],
           home: FolderingHome(),
           title: "Foldering",
         ),
@@ -39,18 +57,20 @@ class FolderingHome extends StatefulWidget {
 
 class _FolderingHomeState extends State<FolderingHome> {
   NavigationBloc _navBloc;
+  ScrollController outerScrollController = ScrollController();
+  ScrollController innerScrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     _navBloc = BlocProvider.of<NavigationBloc>(context);
 
     return CupertinoPageScaffold(
-      navigationBar: buildFolderingAppBar(),
       child: SafeArea(
         child: Stack(
           children: [
             buildMainContent(),
             AddButton(
-              icon: Icon(
+              icon: ZeroPaddingIcon(
                 Icons.folder,
                 size: 30.0,
                 color: Colors.grey[600],
@@ -62,32 +82,43 @@ class _FolderingHomeState extends State<FolderingHome> {
     );
   }
 
-  ListView buildMainContent() {
-    return ListView.builder(
-      itemBuilder: (_context, _idx) {
-        final title = "UX 디자인 노트 $_idx";
-        return Column(
-          children: <Widget>[
-            FolderHeader(
-              isOdd: _idx % 2 == 0,
-              title: title,
-            ),
-            Hero(
-              tag: title + "body",
-              child: BlocBuilder(
-                bloc: _navBloc,
-                builder: (context, control) {
-                  return control == NavigationEvent.toMainStart
-                      ? DataCategory()
-                      : Container();
-                },
-              ),
-            ),
-          ],
-        );
-      },
-      itemCount: 10,
-      padding: EdgeInsets.only(top: 5.0),
+  Widget buildMainContent() {
+    return CustomScrollView(
+      slivers: <Widget>[
+        buildFolderingAppBar(),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final title = "UX Design $index";
+              final headerInfo = FolderInfo(
+                folderIndex: index,
+                isOdd: (index % 2 == 0),
+                title: title,
+              );
+              return Container(
+                color: CupertinoColors.white,
+                child: Hero(
+                  tag: title + '$index-hero',
+                  child: FolderHeader(folderInfo: headerInfo),
+                  transitionOnUserGestures: true,
+                  flightShuttleBuilder:
+                      (flight, animation, direction, from, to) {
+                    return SizeTransition(
+                      sizeFactor:
+                          animation.drive(CurveTween(curve: Curves.easeIn)),
+                      child: Container(
+                        child: direction == HeroFlightDirection.push
+                            ? to.widget
+                            : from.widget,
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

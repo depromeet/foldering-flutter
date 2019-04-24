@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 class AddButton extends StatelessWidget {
-  final Icon icon;
+  final Widget icon;
   const AddButton({
     Key key,
     @required this.icon,
@@ -32,25 +32,25 @@ class AddButton extends StatelessWidget {
             showCupertinoModalPopup(
               context: context,
               builder: (context) {
-                return CupertinoAlertDialog(
-                  content: Column(
-                    children: <Widget>[
-                      CupertinoButton(
-                        child: Text("사진"),
-                        onPressed: () {},
-                      ),
-                      Divider(),
-                      CupertinoButton(
-                        child: Text("링크"),
-                        onPressed: () {},
-                      ),
-                      Divider(),
-                      CupertinoButton(
-                        child: Text("텍스트"),
-                        onPressed: () {},
-                      ),
-                    ],
+                return CupertinoActionSheet(
+                  cancelButton: CupertinoActionSheetAction(
+                    child: Text("폴더 생성"),
+                    onPressed: () {},
                   ),
+                  actions: <Widget>[
+                    CupertinoActionSheetAction(
+                      child: Text("사진"),
+                      onPressed: () {},
+                    ),
+                    CupertinoActionSheetAction(
+                      child: Text("링크"),
+                      onPressed: () {},
+                    ),
+                    CupertinoActionSheetAction(
+                      child: Text("텍스트"),
+                      onPressed: () {},
+                    ),
+                  ],
                 );
               },
             );

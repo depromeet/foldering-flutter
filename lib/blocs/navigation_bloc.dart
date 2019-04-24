@@ -1,13 +1,33 @@
 import 'package:bloc/bloc.dart';
 
-enum NavigationEvent { toMainStart, toDetail, toMainDone }
+enum NavigationAction { toMainStart, toDetail, toMainDone }
 
-class NavigationBloc extends Bloc<NavigationEvent, NavigationEvent> {
+class NavigationEvent {
+  final NavigationAction action;
+  final int targetFolderIndex;
+
+  const NavigationEvent({
+    this.action,
+    this.targetFolderIndex,
+  });
+}
+
+class NavigationBloc extends Bloc<NavigationEvent, int> {
   @override
-  NavigationEvent get initialState => NavigationEvent.toMainDone;
+  int get initialState => -1;
 
   @override
-  Stream<NavigationEvent> mapEventToState(NavigationEvent event) async* {
-    yield event;
+  Stream<int> mapEventToState(NavigationEvent event) async* {
+    switch (event.action) {
+      case NavigationAction.toDetail:
+        yield event.targetFolderIndex;
+        break;
+      case NavigationAction.toMainDone:
+        yield -1;
+        break;
+      case NavigationAction.toMainStart:
+        yield event.targetFolderIndex;
+        break;
+    }
   }
 }

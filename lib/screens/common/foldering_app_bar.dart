@@ -2,39 +2,41 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-CupertinoNavigationBar buildFolderingAppBar() {
-  return CupertinoNavigationBar(
-    border: null,
-    transitionBetweenRoutes: true,
-    backgroundColor: Colors.white,
-    leading: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Text(
-          "Foldering",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+Widget buildFolderingAppBar({
+  bool pinned = true,
+  Widget child,
+}) {
+  Key _keyForSliverAppBar = Key('main-app-bar');
+  return SliverAppBar(
+    key: _keyForSliverAppBar,
+    floating: !pinned,
+    snap: !pinned,
+    pinned: pinned,
+    brightness: Brightness.light,
+    backgroundColor: CupertinoColors.white,
+    elevation: 0.0,
+    automaticallyImplyLeading: false,
+    title: Text(
+      "Foldering",
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: CupertinoColors.black,
+      ),
     ),
-    trailing: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        AppBarButton(
-          icon: CupertinoIcons.search,
-        ),
-        AppBarButton(
-          icon: CupertinoIcons.tag_solid,
-        ),
-        AppBarButton(
-          icon: FontAwesomeIcons.ellipsisV,
-        ),
-      ],
-    ),
+    actions: [
+      AppBarButton(
+        icon: CupertinoIcons.search,
+      ),
+      AppBarButton(
+        icon: CupertinoIcons.tag_solid,
+      ),
+      AppBarButton(
+        icon: FontAwesomeIcons.ellipsisV,
+      ),
+    ],
+    forceElevated: false,
+    bottom: child,
   );
 }
 
