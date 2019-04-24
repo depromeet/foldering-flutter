@@ -80,3 +80,16 @@ class DataCategory extends StatelessWidget {
     );
   }
 }
+
+  Container buildAvatar(double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: ShapeDecoration(
+        shape: CircleBorder(
+          side: BorderSide(color: Colors.white, width: 3),
+        ),
+        color: Colors.grey,
+      ),
+    );
+  }
