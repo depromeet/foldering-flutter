@@ -3,15 +3,18 @@ import 'package:flutter/cupertino.dart';
 
 class AddButton extends StatelessWidget {
   final Widget icon;
+  final double bottomPadding;
+
   const AddButton({
     Key key,
     @required this.icon,
+    this.bottomPadding = 0.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 16.0,
+      bottom: 16.0 + bottomPadding,
       right: 16.0,
       child: Container(
         width: 64.0,

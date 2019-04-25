@@ -11,6 +11,9 @@ import 'package:foldering/screens/common/foldering_app_bar.dart';
 import 'package:foldering/screens/common/foldering_folder.dart';
 import 'package:foldering/screens/common/add_button.dart';
 import 'package:foldering/screens/common/zero_padding_icon.dart';
+import 'package:foldering/screens/folder_detail/bottom_share_bar.dart';
+import 'package:foldering/screens/folder_detail/margin_circle_avatar.dart';
+
 import 'package:foldering/models/folder_info.dart';
 
 import 'package:foldering/blocs/navigation_bloc.dart';
@@ -24,7 +27,8 @@ class DetailedScreen extends StatefulWidget {
   _DetailedScreenState createState() => _DetailedScreenState();
 }
 
-class _DetailedScreenState extends State<DetailedScreen> {
+class _DetailedScreenState extends State<DetailedScreen>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -32,13 +36,6 @@ class _DetailedScreenState extends State<DetailedScreen> {
         child: Stack(
           children: [
             buildMainContent(),
-            AddButton(
-              icon: ZeroPaddingIcon(
-                Icons.library_add,
-                color: Color.fromRGBO(155, 155, 155, 1.0),
-                size: 36.0,
-              ),
-            ),
           ],
         ),
       ),
@@ -58,116 +55,79 @@ class _DetailedScreenState extends State<DetailedScreen> {
       },
       body: Hero(
         tag: widget.folderInfo.title + '${widget.folderInfo.folderIndex}-hero',
-        child: Builder(
-          builder: (context) {
-            var nvs = context.ancestorWidgetOfExactType(NestedScrollView);
-            return CustomScrollView(
-              slivers: <Widget>[
-                nvs != null
-                    ? SliverOverlapInjector(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
-                      )
-                    : SliverToBoxAdapter(
-                        child: SizedBox(height: 0.0),
-                      ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _SliverPersistentHeaderDelegate(
-                    minHeight: totalHeight + 57,
-                    maxHeight: totalHeight + 57,
-                    child: Hero(
-                      tag: widget.folderInfo.title + 'header',
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            color: CupertinoColors.white,
-                            child: FolderHeader(
-                              folderInfo: widget.folderInfo
-                                  .copyWith(isDetailView: true),
-                            ),
+        child: Stack(
+          children: [
+            Builder(
+              builder: (context) {
+                var nvs = context.ancestorWidgetOfExactType(NestedScrollView);
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    nvs != null
+                        ? SliverOverlapInjector(
+                            handle:
+                                NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                    context),
+                          )
+                        : SliverToBoxAdapter(
+                            child: SizedBox(height: 0.0),
                           ),
-                          Container(
-                            color: CupertinoColors.white,
-                            padding: EdgeInsets.symmetric(vertical: 16.0),
-                            child: DataCategory(),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _SliverPersistentHeaderDelegate(
+                        minHeight: totalHeight + 57,
+                        maxHeight: totalHeight + 57,
+                        child: Hero(
+                          tag: widget.folderInfo.title + 'header',
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                color: CupertinoColors.white,
+                                child: FolderHeader(
+                                  folderInfo: widget.folderInfo
+                                      .copyWith(isDetailView: true),
+                                ),
+                              ),
+                              Container(
+                                color: CupertinoColors.white,
+                                padding: EdgeInsets.all(16.0),
+                                child: DataCategory(),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index < 3)
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Panel(),
-                        );
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class DetailContent extends StatelessWidget {
-  const DetailContent({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    NestedScrollView nsv = context.ancestorWidgetOfExactType(NestedScrollView);
-    var handle;
-    if (nsv != null) {
-      print(nsv.toStringDeep());
-      handle = NestedScrollView.sliverOverlapAbsorberHandleFor(context);
-    } else {
-      print("nsv is null");
-    }
-    print("building detail content");
-    return Container(
-      padding: EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 16.0),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          handle == null
-              ? SliverToBoxAdapter(
-                  child: Container(),
-                )
-              : SliverOverlapInjector(
-                  handle: handle,
-                  child: Container(),
-                ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverPersistentHeaderDelegate(
-              minHeight: 52,
-              maxHeight: 52,
-              child: Container(
-                color: CupertinoColors.white,
-                child: DataCategory(),
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                if (index < 3)
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Panel(),
-                  );
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          if (index < 3)
+                            return Container(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              color: CupertinoColors.white,
+                              child: Panel(),
+                            );
+                        },
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
-          ),
-        ],
+//            AddButton(
+//              icon: ZeroPaddingIcon(
+//                Icons.library_add,
+//                color: Color.fromRGBO(155, 155, 155, 1.0),
+//                size: 36.0,
+//              ),
+//              bottomPadding: BottomShareBar.height,
+//            ),
+            Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              child: BottomShareBar(),
+            ),
+          ],
+        ),
       ),
     );
   }

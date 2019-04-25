@@ -106,10 +106,13 @@ class _FolderingHomeState extends State<FolderingHome> {
                     return SizeTransition(
                       sizeFactor:
                           animation.drive(CurveTween(curve: Curves.easeIn)),
-                      child: Container(
-                        child: direction == HeroFlightDirection.push
-                            ? to.widget
-                            : from.widget,
+                      child: Transform(
+                        transform: Matrix4.translationValues(0.0, 0.0, -10.0),
+                        child: Container(
+                          child: direction == HeroFlightDirection.push
+                              ? to.widget
+                              : from.widget,
+                        ),
                       ),
                     );
                   },

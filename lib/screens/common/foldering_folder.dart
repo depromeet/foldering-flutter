@@ -12,12 +12,28 @@ class DataCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         buildCategoryTitle("All"),
+        SizedBox(width: 16.0),
         buildCategoryTitle("Photo"),
+        SizedBox(width: 16.0),
         buildCategoryTitle("URL"),
+        SizedBox(width: 16.0),
         buildCategoryTitle("Text"),
+        Expanded(
+          flex: 10,
+          child: Container(),
+        ),
+        SizedBox(
+          height: 12.0,
+          child: CupertinoButton(
+            padding: EdgeInsets.all(0.0),
+            child: buildCategoryTitle("ADD"),
+            onPressed: () {},
+            minSize: 12.0,
+          ),
+        ),
       ],
     );
   }

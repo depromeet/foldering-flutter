@@ -94,13 +94,6 @@ class FolderHeader extends StatelessWidget {
                             flex: 10,
                             child: Container(),
                           ),
-                          this.folderInfo.isDetailView
-                              ? CupertinoButton(
-//                            child: Icon(Icons.add),
-                                  child: Text("ADD"),
-                                  onPressed: () {},
-                                )
-                              : Container(),
                         ],
                       ),
                     ),
@@ -224,14 +217,5 @@ class FolderingRoute extends CupertinoPageRoute {
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return child;
-  }
-
-  @override
-  void dispose() {
-    bloc.dispatch(NavigationEvent(
-      action: NavigationAction.toMainDone,
-      targetFolderIndex: this.folderInfo.folderIndex,
-    ));
-    super.dispose();
   }
 }
