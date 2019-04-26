@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:foldering/screens/folder_detail/folder_detail.dart';
 import 'package:foldering/models/folder_info.dart';
-
-import 'package:foldering/blocs/navigation_bloc.dart';
 
 const handleHeight = 22.0;
 const handleWidth = 80.0;
@@ -23,20 +20,12 @@ class FolderHeader extends StatelessWidget {
 
   FolderHeader({@required this.folderInfo});
 
-  _handleNavigation(BuildContext context, NavigationBloc _navBloc) async {
+  _handleNavigation(BuildContext context) async {
     if (this.folderInfo.isDetailView) {
-      _navBloc.dispatch(NavigationEvent(
-        targetFolderIndex: this.folderInfo.folderIndex,
-        action: NavigationAction.toMainStart,
-      ));
       Navigator.of(context).pop();
     } else {
-      _navBloc.dispatch(NavigationEvent(
-        targetFolderIndex: this.folderInfo.folderIndex,
-        action: NavigationAction.toDetail,
-      ));
       Navigator.of(context).push(
-        FolderingRoute(bloc: _navBloc, folderInfo: this.folderInfo),
+        FolderingRoute(folderInfo: this.folderInfo),
       );
     }
   }
@@ -44,10 +33,9 @@ class FolderHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final NavigationBloc _navBloc = BlocProvider.of<NavigationBloc>(context);
     return GestureDetector(
       onTap: () {
-        _handleNavigation(context, _navBloc);
+        _handleNavigation(context);
       },
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0),
@@ -202,12 +190,10 @@ class _ClipShadowShadowPainter extends CustomPainter {
 }
 
 class FolderingRoute extends CupertinoPageRoute {
-  final NavigationBloc bloc;
   final FolderInfo folderInfo;
 
   FolderingRoute({
     @required this.folderInfo,
-    @required this.bloc,
   }) : super(
           builder: (BuildContext context) =>
               DetailedScreen(folderInfo: folderInfo),

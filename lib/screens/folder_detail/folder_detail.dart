@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:foldering/screens/folder_header/folder_header.dart';
@@ -15,8 +14,6 @@ import 'package:foldering/screens/folder_detail/bottom_share_bar.dart';
 import 'package:foldering/screens/folder_detail/margin_circle_avatar.dart';
 
 import 'package:foldering/models/folder_info.dart';
-
-import 'package:foldering/blocs/navigation_bloc.dart';
 
 class DetailedScreen extends StatefulWidget {
   final FolderInfo folderInfo;
@@ -113,14 +110,6 @@ class _DetailedScreenState extends State<DetailedScreen>
                 );
               },
             ),
-//            AddButton(
-//              icon: ZeroPaddingIcon(
-//                Icons.library_add,
-//                color: Color.fromRGBO(155, 155, 155, 1.0),
-//                size: 36.0,
-//              ),
-//              bottomPadding: BottomShareBar.height,
-//            ),
             Positioned(
               bottom: 0.0,
               left: 0.0,

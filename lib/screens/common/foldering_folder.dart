@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import './add_button.dart';
+
 enum ContentCategory { all, photo, url, text }
 
 class DataCategory extends StatelessWidget {
@@ -30,7 +32,14 @@ class DataCategory extends StatelessWidget {
           child: CupertinoButton(
             padding: EdgeInsets.all(0.0),
             child: buildCategoryTitle("ADD"),
-            onPressed: () {},
+            onPressed: () {
+              showCupertinoModalPopup(
+                context: context,
+                builder: (context) {
+                  return AddItemActionSheet();
+                },
+              );
+            },
             minSize: 12.0,
           ),
         ),

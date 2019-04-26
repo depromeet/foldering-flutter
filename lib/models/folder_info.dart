@@ -9,8 +9,8 @@ class FolderInfo {
 
   FolderInfo({
     @required this.title,
-    @required this.isOdd,
-    @required this.folderIndex,
+    this.isOdd = false,
+    this.folderIndex = 0,
     this.isShared = false,
     this.isDetailView = false,
   });
