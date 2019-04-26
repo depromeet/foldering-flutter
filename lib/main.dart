@@ -8,10 +8,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:foldering/screens/common/foldering_app_bar.dart';
 import 'package:foldering/screens/folder_header/folder_header.dart';
-import 'package:foldering/screens/folder_detail/folder_detail.dart';
-import 'package:foldering/screens/common/foldering_folder.dart';
 import 'package:foldering/screens/common/add_button.dart';
-import 'package:foldering/screens/common/zero_padding_icon.dart';
+import 'package:foldering/screens/empty_home/empty_home.dart';
 import 'package:foldering/models/folder_info.dart';
 
 import 'package:foldering/blocs/folder_bloc.dart';
@@ -124,62 +122,67 @@ class FolderHomeList extends StatelessWidget {
       builder: (BuildContext context, FolderData data) {
         List<FolderInfo> folders = data.data;
         print("Build ${folders?.length} items with status ${data.status}");
-        return CustomScrollView(
-          slivers: <Widget>[
-            buildFolderingAppBar(pinned: true),
-            (data.status == FolderServiceState.isLoading)
-                ? SliverToBoxAdapter(
-                    child: Container(
-                      child: Center(
-                        child: CupertinoActivityIndicator(),
+        if (data.status == FolderServiceState.isLoaded && folders == null) {
+          return FolderingEmptyHome();
+        } else {
+          return CustomScrollView(
+            slivers: <Widget>[
+              buildFolderingAppBar(pinned: true),
+              (data.status == FolderServiceState.isLoading)
+                  ? SliverToBoxAdapter(
+                      child: Container(
+                        child: Center(
+                          child: CupertinoActivityIndicator(),
+                        ),
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, listIndex) {
+                          int index = listIndex;
+                          if (index < folders.length) {
+                            final folderInfo = folders[index].copyWith(
+                              isOdd: (index % 2 == 0),
+                              folderIndex: index,
+                            );
+                            return Container(
+                              color: CupertinoColors.white,
+                              child: Hero(
+                                tag: folderInfo.title + '$index-hero',
+                                child: FolderHeader(folderInfo: folderInfo),
+                                transitionOnUserGestures: true,
+                                flightShuttleBuilder:
+                                    (flight, animation, direction, from, to) {
+                                  return SizeTransition(
+                                    sizeFactor: animation.drive(
+                                        CurveTween(curve: Curves.easeIn)),
+                                    child: Transform(
+                                      transform: Matrix4.translationValues(
+                                          0.0, 0.0, -10.0),
+                                      child: Container(
+                                        child: direction ==
+                                                HeroFlightDirection.push
+                                            ? to.widget
+                                            : from.widget,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          } else if (data.status ==
+                                  FolderServiceState.isAdding &&
+                              index == folders.length) {
+                            return CupertinoActivityIndicator();
+                          } else {
+                            return null;
+                          }
+                        },
                       ),
                     ),
-                  )
-                : SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, listIndex) {
-                        int index = listIndex;
-                        if (index < folders.length) {
-                          final folderInfo = folders[index].copyWith(
-                            isOdd: (index % 2 == 0),
-                            folderIndex: index,
-                          );
-                          return Container(
-                            color: CupertinoColors.white,
-                            child: Hero(
-                              tag: folderInfo.title + '$index-hero',
-                              child: FolderHeader(folderInfo: folderInfo),
-                              transitionOnUserGestures: true,
-                              flightShuttleBuilder:
-                                  (flight, animation, direction, from, to) {
-                                return SizeTransition(
-                                  sizeFactor: animation
-                                      .drive(CurveTween(curve: Curves.easeIn)),
-                                  child: Transform(
-                                    transform: Matrix4.translationValues(
-                                        0.0, 0.0, -10.0),
-                                    child: Container(
-                                      child:
-                                          direction == HeroFlightDirection.push
-                                              ? to.widget
-                                              : from.widget,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        } else if (data.status == FolderServiceState.isAdding &&
-                            index == folders.length) {
-                          return CupertinoActivityIndicator();
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                  ),
-          ],
-        );
+            ],
+          );
+        }
       },
     );
   }

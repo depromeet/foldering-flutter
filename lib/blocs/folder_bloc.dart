@@ -20,20 +20,21 @@ class FolderAction {
   }
 }
 
-List<FolderInfo> _testList = [
-  FolderInfo(
-    title: "UX title",
-  ),
-  FolderInfo(
-    title: "Dev title",
-  ),
-  FolderInfo(
-    title: "Depromeet title",
-  ),
-  FolderInfo(
-    title: "test title",
-  ),
-];
+List<FolderInfo> _testList;
+//[
+//  FolderInfo(
+//    title: "UX title",
+//  ),
+//  FolderInfo(
+//    title: "Dev title",
+//  ),
+//  FolderInfo(
+//    title: "Depromeet title",
+//  ),
+//  FolderInfo(
+//    title: "test title",
+//  ),
+//];
 
 enum FolderServiceState {
   isIdle,
@@ -75,8 +76,13 @@ class FolderBloc extends Bloc<FolderAction, FolderData> {
       FolderData(status: FolderServiceState.isLoading);
   @override
   Stream<FolderData> mapEventToState(FolderAction action) async* {
+    print("Action: $action");
     switch (action.event) {
       case FolderEvent.addFolder:
+        if (action.folderTitle == null) {
+          yield currentState;
+        }
+        FolderInfo newFolder = FolderInfo(title: action.folderTitle);
         // 서버 저장 완료 전에는 인디케이터 보여주기
         FolderData current = currentState.copyWith(
           status: FolderServiceState.isAdding,
@@ -85,7 +91,11 @@ class FolderBloc extends Bloc<FolderAction, FolderData> {
 
         // 서버 저장 기다리기
         current.status = FolderServiceState.isLoaded;
-        current.data.add(FolderInfo(title: action.folderTitle));
+        if (current.data == null) {
+          current.data = [newFolder];
+        } else {
+          current.data.add(newFolder);
+        }
         yield current;
 
         break;
